@@ -34,6 +34,11 @@ def get_salary_statistics_hh(language: str):
         response = requests.get(f'{base_api}/vacancies', params=params)
         response.raise_for_status()
         found_vacancies = response.json()
+        if not found_vacancies['items']:
+            vacancies_not_found = {'vacancies found': 0,
+                                   'vacancies_processed': 0,
+                                   'average_salary': 0}
+            return vacancies_not_found
         for vacancy in found_vacancies['items']:
             if vacancy['salary']['currency'] == 'RUR':
                 vacancies_processed += 1
@@ -42,7 +47,9 @@ def get_salary_statistics_hh(language: str):
         page += 1
         page_number = found_vacancies['pages']
     total_average_salary = int(total_salary / vacancies_processed)
-    average_salary_results = {'vacancies found': found_vacancies['found'], 'vacancies_processed': vacancies_processed, 'average_salary': total_average_salary}
+    average_salary_results = {'vacancies found': found_vacancies['found'],
+                              'vacancies_processed': vacancies_processed,
+                              'average_salary': total_average_salary}
     return average_salary_results
 
 
@@ -62,19 +69,24 @@ def get_salary_statistics_sj(language: str):
     response = requests.get(f'{base_api}/vacancies', headers=headers, params=params)
     response.raise_for_status()
     found_vacancies = response.json()
+    if not found_vacancies['objects']:
+        vacancies_not_found = {'vacancies found': 0, 'vacancies_processed': 0, 'average_salary': 0}
+        return vacancies_not_found
     for vacancy in found_vacancies['objects']:
         if vacancy['currency'] == 'rub':
             vacancies_processed += 1
             total_salary += predict_rub_salary(payment_from=vacancy['payment_from'], payment_to=vacancy['payment_to'])
             average_salary = int(total_salary/vacancies_processed)
-    average_salary_results = {'vacancies found': found_vacancies['total'], 'vacancies_processed': vacancies_processed, 'average_salary': average_salary}
+    average_salary_results = {'vacancies found': found_vacancies['total'],
+                              'vacancies_processed': vacancies_processed,
+                              'average_salary': average_salary}
     return average_salary_results
 
 
-def predict_rub_salary(payment_from: int, payment_to: int):
-    if (payment_from == 0) or (payment_from is None):
+def predict_rub_salary(payment_from, payment_to):
+    if not payment_from:
         return payment_to*0.8
-    elif (payment_to == 0) or (payment_to is None):
+    elif not payment_to:
         return payment_from/1.2
     else:
         return (payment_from+payment_to)/2
