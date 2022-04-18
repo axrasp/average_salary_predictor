@@ -11,6 +11,7 @@ def main():
     grouped_average_salary_hh = {}
     grouped_average_salary_sj = {}
 
+
     for language in languages:
         grouped_average_salary_hh[language] = get_salary_statistics_hh(language)
         grouped_average_salary_sj[language] = get_salary_statistics_sj(language)
@@ -21,6 +22,7 @@ def main():
 def get_salary_statistics_hh(language: str):
     vacancies_processed = 0
     total_salary = 0
+    vacancies_not_found = {'vacancies found': 0, 'vacancies_processed': 0, 'average_salary': 0}
     base_api = "https://api.hh.ru"
     page = 0
     page_number = 1
@@ -35,9 +37,6 @@ def get_salary_statistics_hh(language: str):
         response.raise_for_status()
         found_vacancies = response.json()
         if not found_vacancies['items']:
-            vacancies_not_found = {'vacancies found': 0,
-                                   'vacancies_processed': 0,
-                                   'average_salary': 0}
             return vacancies_not_found
         for vacancy in found_vacancies['items']:
             if vacancy['salary']['currency'] == 'RUR':
@@ -57,6 +56,7 @@ def get_salary_statistics_sj(language: str):
     vacancies_processed = 0
     average_salary = 0
     total_salary = 0
+    vacancies_not_found = {'vacancies found': 0, 'vacancies_processed': 0, 'average_salary': 0}
     base_api = 'https://api.superjob.ru/2.0'
     secret_key_sj = os.getenv('SECRET_KEY')
     headers = {
@@ -70,7 +70,6 @@ def get_salary_statistics_sj(language: str):
     response.raise_for_status()
     found_vacancies = response.json()
     if not found_vacancies['objects']:
-        vacancies_not_found = {'vacancies found': 0, 'vacancies_processed': 0, 'average_salary': 0}
         return vacancies_not_found
     for vacancy in found_vacancies['objects']:
         if vacancy['currency'] == 'rub':
