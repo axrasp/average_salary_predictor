@@ -8,17 +8,17 @@ from terminaltables import AsciiTable
 def main():
     load_dotenv()
     languages = (os.getenv("LANGUAGES")).split(',')
-    hh_total = {}
-    sj_total = {}
+    grouped_average_salary_hh = {}
+    grouped_average_salary_sj = {}
 
     for language in languages:
-        hh_total[language] = predict_rub_salary_hh(language)
-        sj_total[language] = predict_rub_salary_sj(language)
-    print_result_table(vacancies_result=hh_total, title='Headhunter Moscow')
-    print_result_table(vacancies_result=sj_total, title='Superjob Moscow')
+        grouped_average_salary_hh[language] = get_salary_statistics_hh(language)
+        grouped_average_salary_sj[language] = get_salary_statistics_sj(language)
+    print_result_table(vacancies_result=grouped_average_salary_hh, title='Headhunter Moscow')
+    print_result_table(vacancies_result=grouped_average_salary_sj, title='Superjob Moscow')
 
 
-def predict_rub_salary_hh(language: str):
+def get_salary_statistics_hh(language: str):
     vacancies_processed = 0
     total_salary = 0
     base_api = "https://api.hh.ru"
@@ -46,7 +46,7 @@ def predict_rub_salary_hh(language: str):
     return average_salary_results
 
 
-def predict_rub_salary_sj(language: str):
+def get_salary_statistics_sj(language: str):
     vacancies_processed = 0
     average_salary = 0
     total_salary = 0
