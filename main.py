@@ -8,9 +8,6 @@ from terminaltables import AsciiTable
 def get_salary_statistics_hh(language: str):
     vacancies_processed = 0
     total_salary = 0
-    vacancies_not_found = {'vacancies found': 0,
-                           'vacancies_processed': 0,
-                           'average_salary': 0}
     base_api = "https://api.hh.ru"
     page = 0
     page_number = 1
