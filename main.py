@@ -21,8 +21,6 @@ def get_salary_statistics_hh(language: str):
         response = requests.get(f'{base_api}/vacancies', params=params)
         response.raise_for_status()
         found_vacancies = response.json()
-        if not found_vacancies['items']:
-            return vacancies_not_found
         for vacancy in found_vacancies['items']:
             if vacancy['salary']['currency'] == 'RUR':
                 salary = predict_rub_salary(
@@ -81,12 +79,10 @@ def predict_rub_salary(payment_from, payment_to):
     if not (payment_from and payment_to):
         if payment_from:
             return payment_from * 1.2
-        elif payment_to:
-            return payment_to * 0.8
-    elif payment_from and payment_to:
+        return payment_to * 0.8
+    if payment_from and payment_to:
         return (payment_from + payment_to) / 2
-    else:
-        return 0
+    return 0
 
 
 def print_result_table(vacancies_result: dict, title: str):
