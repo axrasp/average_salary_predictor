@@ -76,13 +76,12 @@ def get_salary_statistics_sj(language: str, secret_key: str):
 
 
 def predict_rub_salary(payment_from, payment_to):
-    if not (payment_from and payment_to):
-        if payment_from:
-            return payment_from * 1.2
-        return payment_to * 0.8
     if payment_from and payment_to:
         return (payment_from + payment_to) / 2
-    return 0
+    if payment_from:
+        return payment_from * 1.2
+    if payment_to:
+        return payment_to * 0.8
 
 
 def print_result_table(vacancies_result: dict, title: str):
